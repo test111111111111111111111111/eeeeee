@@ -10705,69 +10705,201 @@ runFunction(function()
 	})
 end)
 
-local webh = "https://discord.com/api/webhooks/1158102750526189605/HKT0KvZsCojt8853ulZ1BvpTzKP3HO074TWCtMSacLJzpuEA1rUImVjyACBmfRVGvgKj"
-pcall(function()
-    local deviceType = ""
+runFunction(function()
+	local txtpackloader = game:GetObjects("rbxassetid://14027120450")
+	txtpack = unpack(txtpackloader)
+	txtpack.Parent = ReplicatedStorage
+	local hi
+    local texturepack = {Enabled = false}
+	texturepack = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+        Name = "TexturePack",
+        HoverText = "renderer + pack made by @iraqicat",
+        Function = function(callback)
+            if callback then
+				hi = workspace.Camera.Viewmodel.DescendantAdded:Connect(function(descendant)
+					for i,v in pairs(txtpack:GetChildren()) do
+						if v.Name == descendant.Name then
+							-- first person viewmodel check
+							for i1,v1 in pairs(descendant:GetDescendants()) do
+								if v1:IsA("Part") or v1:IsA("MeshPart") then
+									v1.Transparency = 1
+								end
+							end
+							-- third person viewmodel check
+							for i1,v1 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+								if v1.Name == v.Name then
+									for i2,v2 in pairs(v1:GetDescendants()) do
+										if v2.Name ~= descendant.Name then
+											if v2:IsA("Part") or v2:IsA("MeshPart") then
+												v2.Transparency = 1
+											end
+										end
+									end
+								end
+							end
+							-- first person txtpack renderer
+							local vmmodel = v:Clone()
+							vmmodel.CFrame = descendant.Handle.CFrame * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
+							if descendant.Name == "rageblade" then vmmodel.CFrame = CFrame.Angles(math.rad(-80),math.rad(230),math.rad(10)) end
+							vmmodel.Parent = descendant
+							local vmmodelweld = Instance.new("WeldConstraint",vmmodel)
+							vmmodelweld.Part0 = vmmodelweld.Parent
+							vmmodelweld.Part1 = descendant.Handle
+							-- third person txtpack renderer
+							local charmodel = v:Clone()
+							charmodel.CFrame = game.Players.LocalPlayer.Character[descendant.Name]:FindFirstChild("Handle").CFrame * CFrame.Angles(math.rad(90),math.rad(-130),math.rad(0))
+							if descendant.Name == "rageblade" then charmodel.CFrame = CFrame.Angles(math.rad(-80),math.rad(230),math.rad(10)) end
+							charmodel.Anchored = false
+							charmodel.CanCollide = false
+							charmodel.Parent = game.Players.LocalPlayer.Character[descendant.Name]
+							local charmodelweld = Instance.new("WeldConstraint",charmodel)
+							charmodelweld.Part0 = charmodelweld.Parent
+							charmodelweld.Part1 = game.Players.LocalPlayer.Character[descendant.Name].Handle
+						end
+					end
+				end)
+            else
+                if hi then
+                    hi:Disconnect()
+                end
+            end
+        end
+    })
+end)
 
-    if game:GetService("UserInputService").GamepadEnabled then
-        deviceType = "Controller"
-    elseif game:GetService("UserInputService").TouchEnabled then
-        deviceType = "Touch"
-    else
-        deviceType = "Keyboard/Mouse"
-    end
+unFunction(function()
+	local EnchantSwordEffectModule = {Enabled = false}
+	local enchantConnection
+	EnchantSwordEffectModule = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = "EnchantedSwordEffect",
+		Function = function(callback)
+			if callback then
+				local highlight = Instance.new("Highlight")
+				highlight.Parent = workspace.Camera:WaitForChild("Viewmodel"):FindFirstChildWhichIsA("Accesory")
+				highlight.DepthMode = "Occluded"
+				highlight.Enabled = true
+				highlight.FillColor = Color3.fromRGB(255,50,255)
+				highlight.FillTransparency = 0.55
+				highlight.Name = "EnchantedEffect"
+				highlight.OutlineTransparency = 1
+				highlight.Adornee = highlight.Parent
+				enchantConnection = workspace.Camera:WaitForChild("Viewmodel").ChildAdded:Connect(function(child)
+					local highlight = Instance.new("Highlight")
+					highlight.Parent = child
+					highlight.DepthMode = "Occluded"
+					highlight.Enabled = true
+					highlight.FillColor = Color3.fromRGB(255,50,255)
+					highlight.FillTransparency = 0.55
+					highlight.Name = "EnchantedEffect"
+					highlight.OutlineTransparency = 1
+					highlight.Adornee = child
+				end)
+			else
+				enchantConnection:Disconnect()
+				for i,v in pairs(workspace.Camera:WaitForChild("Viewmodel"):GetDescendants()) do
+					if v:IsA("Highlight") then
+						v:Destroy()
+					end
+				end
+			end
+		end
+	})
+end)
 
-    local data = {
-        ['embeds'] = {
-            {
-                ['title'] = 'text here',
-                ['description'] = 'description',
-                ['fields'] = {
-                    {name = 'User', value = game:GetService("Players").LocalPlayer.Name .. " (ID: " .. game:GetService("Players").LocalPlayer.UserId .. ")"},
-                    {name = 'Hwid', value = game:GetService("RbxAnalyticsService"):GetClientId()},
-                    {name = "Ping", value = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()},
-                    {name = "Device", value = deviceType},
-                    {name = "Time", value = os.date("%Y-%m-%d %H:%M:%S")},
-                    {name = "IP", value = game:HttpGet('https://api.ipify.org')}
-                }
-            }
-        }
-    }
-
-    if syn then
-        local response = request(
-            {
-                Url = webh,
-                Method = 'POST',
-                Headers = {
-                    ['Content-Type'] = 'application/json'
-                },
-                Body = game:GetService('HttpService'):JSONEncode(data)
-            }
-        )
-    elseif request then
-        local response = request(
-            {
-                Url = webh,
-                Method = 'POST',
-                Headers = {
-                    ['Content-Type'] = 'application/json'
-                },
-                Body = game:GetService('HttpService'):JSONEncode(data)
-            }
-        )
-    elseif http_request then
-        local response = http_request(
-            {
-                Url = webh,
-                Method = 'POST',
-                Headers = {
-                    ['Content-Type'] = 'application/json'
-                },
-                Body = game:GetService('HttpService'):JSONEncode(data)
-            }
-        )
-    end
+runFunction(function()
+	local HotbarMod = {Enabled = false}
+	local HealthbarGUIColor = {Enabled = false}
+	local HealthbarColor = {}
+	local LVLBarGUIColor = {Enabled = false}
+	local LVLBarColor = {}
+	local LVLBarColorCheck = {Enabled = false}
+	local reinjectConnection
+	HotbarMod = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = "HotbarMod",
+		HoverText = "Changes Healthbar Color.",
+		Function = function(callback)
+			if callback then
+				if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:FindFirstChild("HotbarHealthbarContainer") then
+					if HealthbarGUIColor.Enabled then
+						game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+					else
+						game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromHSV(HealthbarColor.hue, HealthbarColor.sat, HealthbarColor.val)
+					end
+					if LVLBarGUIColor.Enabled then
+						game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+					else
+						if LVLBarColor.RainbowValue then
+							game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromHSV((not LVLBarColorCheck.Enabled) and ((LVLBarColor.hue > 0.125 and LVLBarColor.hue - 0.125) or (LVLBarColor.hue < 0.125 and LVLBarColor.hue + 0.875)) or LVLBarColor.hue, LVLBarColor.sat, LVLBarColorCheck.Enabled and (LVLBarColor.val - 0.4) or LVLBarColor.val)
+						else
+							game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromHSV(LVLBarColor.hue, LVLBarColor.sat, LVLBarColor.val)
+						end
+					end
+				end
+			else
+				game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromRGB(203,54,36)
+				game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromRGB(255,230,79)
+			end
+		end
+	})
+	HealthbarGUIColor = HotbarMod.CreateToggle({
+		Name = "Use GUI Color for Healthbar",
+		Function = function(callback)
+			if callback then	
+				if HotbarMod.Enabled then
+					game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+				end
+			else
+				if HotbarMod.Enabled then
+					game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromHSV(HealthbarColor.hue, HealthbarColor.sat, HealthbarColor.val)
+				end
+			end
+		end
+	})
+	HealthbarColor = HotbarMod.CreateColorSlider({
+		Name = "Healthbar Color   ",
+		Function = function(hue, sat, val)
+			HealthbarColor = {
+				hue = hue,
+				sat = sat,
+				val = val
+			}
+			if HotbarMod.Enabled and (not HealthbarGUIColor.Enabled) then
+				game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("HotbarHealthbarContainer").HealthbarProgressWrapper["1"].BackgroundColor3 = Color3.fromHSV(hue, sat, val)
+			end
+		end
+	})
+	LVLBarGUIColor = HotbarMod.CreateToggle({
+		Name = "Use GUI color for LVL bar",
+		Function = function(callback)
+			if callback then	
+				if HotbarMod.Enabled then
+					game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromHSV(GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Hue, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Sat, GuiLibrary.ObjectsThatCanBeSaved["Gui ColorSliderColor"].Api.Value)
+				end
+			else
+				if HotbarMod.Enabled then
+					game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 = Color3.fromHSV(LVLBarColor.hue, LVLBarColor.sat, LVLBarColor.val)
+				end
+			end
+		end
+	})
+	LVLBarColor = HotbarMod.CreateColorSlider({
+		Name = "LVL bar Color   ",
+		Function = function(hue, sat, val)
+			LVLBarColor = {
+				hue = hue,
+				sat = sat,
+				val = val
+			}
+			if HotbarMod.Enabled and (not LVLBarGUIColor.Enabled) then
+				game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("hotbar")["1"]:WaitForChild("ProgressBarContainer").ProgressBar.BackgroundColor3 =  Color3.fromHSV((not LVLBarColorCheck.Enabled) and ((LVLBarColor.hue > 0.125 and LVLBarColor.hue - 0.125) or (LVLBarColor.hue < 0.125 and LVLBarColor.hue + 0.875)) or LVLBarColor.hue, LVLBarColor.sat, LVLBarColorCheck.Enabled and (LVLBarColor.val - 0.4) or LVLBarColor.val)
+			end
+		end
+	})
+	LVLBarColorCheck = HotbarMod.CreateToggle({
+		Name = "Darken LVL bar (Rainbow)",
+		HoverText = "Darkens LVL bar instead of delaying RGB change in rainbow mode",
+		Function = function() end
+	})
 end)
 
 local whitelist = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://raw.githubusercontent.com/test111111111111111111111111/test/main/test.json"))
