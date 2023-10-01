@@ -10767,7 +10767,7 @@ runFunction(function()
     })
 end)
 
-unFunction(function()
+runFunction(function()
 	local EnchantSwordEffectModule = {Enabled = false}
 	local enchantConnection
 	EnchantSwordEffectModule = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
