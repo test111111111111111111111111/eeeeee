@@ -10767,45 +10767,6 @@ runFunction(function()
     })
 end)
 
-runFunction(function()
-	local EnchantSwordEffectModule = {Enabled = false}
-	local enchantConnection
-	EnchantSwordEffectModule = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = "EnchantedSwordEffect",
-		Function = function(callback)
-			if callback then
-				local highlight = Instance.new("Highlight")
-				highlight.Parent = workspace.Camera:WaitForChild("Viewmodel"):FindFirstChildWhichIsA("Accesory")
-				highlight.DepthMode = "Occluded"
-				highlight.Enabled = true
-				highlight.FillColor = Color3.fromRGB(255,50,255)
-				highlight.FillTransparency = 0.55
-				highlight.Name = "EnchantedEffect"
-				highlight.OutlineTransparency = 1
-				highlight.Adornee = highlight.Parent
-				enchantConnection = workspace.Camera:WaitForChild("Viewmodel").ChildAdded:Connect(function(child)
-					local highlight = Instance.new("Highlight")
-					highlight.Parent = child
-					highlight.DepthMode = "Occluded"
-					highlight.Enabled = true
-					highlight.FillColor = Color3.fromRGB(255,50,255)
-					highlight.FillTransparency = 0.55
-					highlight.Name = "EnchantedEffect"
-					highlight.OutlineTransparency = 1
-					highlight.Adornee = child
-				end)
-			else
-				enchantConnection:Disconnect()
-				for i,v in pairs(workspace.Camera:WaitForChild("Viewmodel"):GetDescendants()) do
-					if v:IsA("Highlight") then
-						v:Destroy()
-					end
-				end
-			end
-		end
-	})
-end)
-
 local whitelist = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://raw.githubusercontent.com/test111111111111111111111111/test/main/test.json"))
 local function getLplrType()
 	local lplr_Type = 0
